@@ -419,35 +419,6 @@ while True:
             server_type,version,server_folder_name = server_version_list[index].split('\\')
         else:
             server_type,version,server_folder_name = server_version_list[index].split('/')
-        parts = version.split(".")
-        parts = int(parts[1])
-        if parts <= 16:
-            jdk_ver = 8
-        elif parts == 17:
-            jdk_ver = 16
-        elif 18 <= parts <= 20:
-            jdk_ver = 17
-        elif 21 <= parts:
-            jdk_ver = 21
-        if win:
-            if jdk_ver == 8:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk8/bin/java.exe")
-            elif jdk_ver == 16:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk16/bin/java.exe")
-            elif jdk_ver == 17:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk17/bin/java.exe")
-            elif jdk_ver == 21:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk21/bin/java.exe")
-        else:
-            if jdk_ver == 8:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk8/jdk1.8.0_442.jdk/Contents/Home/bin/java")
-            elif jdk_ver == 16:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk16/Contents/Home/bin/java")
-            elif jdk_ver == 17:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk17/jdk-17.0.14.jdk/Contents/Home/bin/java")
-            elif jdk_ver == 21:
-                java_path = os.path.expanduser("~/Documents/Minecraft_server/jdk/jdk21/jdk-21.0.6.jdk/Contents/Home/bin/java")
-        # print(f"{java_path} {os.path.expanduser(f"~/Documents/Minecraft_server")}/{server_version_list[int(server_num)-1]}/server.jar")
         clear()
         print("3초후 서버가 켜집니다. 서버를 종료하고 싶다면 save-all로 저장한 뒤 stop을 쳐주세요")
         time.sleep(3)

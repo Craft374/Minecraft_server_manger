@@ -2,4 +2,4 @@
 test/node_modules
 build
 dist
-ui.py
+ui_sample.py
