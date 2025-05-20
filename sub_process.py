@@ -2,8 +2,9 @@ import customtkinter as ctk
 import tkinter.filedialog
 from PIL import Image
 from ctk_label_button import make_image_button
-import asyncio
 from mcipc.rcon.je import Client
+import os
+import re
 
 class ServerFunctions:
     def __init__(self, app):
@@ -45,26 +46,125 @@ class ServerFunctions:
         ctk.set_widget_scaling(int(scale.replace("%", "")) / 100)
 
     def command_send(self, command):
-        with Client("localhost", 25575, passwd="1234") as client:
-            response = client.run(command)
-            print(f"[RCON 응답]: {response}")
+        try:
+            with Client("localhost", 25575, passwd="1234") as client:
+                response = client.run(command)
+                for line in response.splitlines():
+                    if "Thread RCON Client" in line:
+                        continue
+                    self.app.log_text.configure(state="normal")
+                    self.app.log_text.insert("end", line + "\n")
+                    self.app.log_text.see("end")
+                    self.app.log_text.configure(state="disabled")
+        except Exception as e:
+            self.app.log_text.configure(state="normal")
+            self.app.log_text.insert("end", f"RCON 연결 실패: {e}\n")
+            self.app.log_text.see("end")
+            self.app.log_text.configure(state="disabled")
 
     def kick(self, player_input):
         command = f"kick {player_input.get("1.0", "end-1c").strip()}"
-        print(command)
         self.command_send(command)
 
     def ban(self, player_input):
         command = f"ban {player_input.get("1.0", "end-1c").strip()}"
-        print(command)
         self.command_send(command)
 
     def op(self, player_input):
         command = f"op {player_input.get("1.0", "end-1c").strip()}"
-        print(command)
+        self.command_send(command)
+
+    def deop(self, player_input):
+        command = f"deop {player_input.get("1.0", "end-1c").strip()}"
+        self.command_send(command)
+
+    def pardon(self, player_input):
+        command = f"pardon {player_input.get("1.0", "end-1c").strip()}"
         self.command_send(command)
 
     def gamemode(self, player_input, mode):
         command = f"gamemode {mode} {player_input.get("1.0", "end-1c").strip()}"
-        print(command)
         self.command_send(command)
+
+    def time(self, time):
+        command = f"time set {time.get("1.0", "end-1c").strip()}"
+        self.command_send(command)
+
+    def weather(self, weather):
+        command = f"weather {weather}"
+        self.command_send(command)
+
+    def reload(self):
+        command = "reload confirm"
+        self.command_send(command)
+
+    def stop(self):
+        command = "save-all"
+        self.command_send(command)
+        command = "stop"
+        self.command_send(command)
+
+    def gamerule(self, rule, arg):
+        rule = rule.split(" (")[0]  # 괄호 포함 버전 정보 제거
+        command = f"gamerule {rule} {arg.get('1.0', 'end-1c').strip()}"
+        self.command_send(command)
+
+    def difficult(self, dif):
+        command = f"difficulty {dif}"
+        self.command_send(command)
+
+    def server_list(self):
+        server_folder_path = os.path.expanduser(f"~/Documents/Minecraft_server")
+        server_list_name = [f for f in os.listdir(server_folder_path)
+                            if os.path.isdir(os.path.join(server_folder_path, f)) and f != "jdk"]
+
+        server_version_list = []
+        for parent_folder in server_list_name:
+            parent_path = os.path.join(server_folder_path, parent_folder)
+            for sub1 in os.listdir(parent_path):
+                sub1_path = os.path.join(parent_path, sub1)
+                if os.path.isdir(sub1_path):
+                    for sub2 in os.listdir(sub1_path):
+                        sub2_path = os.path.join(sub1_path, sub2)
+                        if os.path.isdir(sub2_path):
+                            server_version_list.append(os.path.join(parent_folder, sub1, sub2))
+
+        return server_version_list
+
+    def nogui_toggle(self, onoff, name, win):
+        server_folder_path = f"{os.path.expanduser(f"~/Documents/Minecraft_server")}/{name}"
+        if not win:
+            run_sh_path = os.path.join(server_folder_path, "run.sh")
+        else:
+            run_sh_path = os.path.join(server_folder_path, "run.bat")
+        # 파일 내용 읽기
+        with open(run_sh_path, "r") as file:
+            lines = file.readlines()
+
+        # 수정된 라인 저장
+        new_lines = []
+
+        if onoff:
+            for line in lines:
+                if "server.jar" in line and "nogui" not in line:
+                    if not win and '"$@"' in line:
+                        line = line.replace('"$@"', 'nogui "$@"')
+                    elif win and '%*' in line:
+                        # 앞뒤 공백 정리하며 대체
+                        line = re.sub(r'\s*%[*]', ' nogui %*', line)
+                    else:
+                        line = line.strip() + " nogui\n"
+                new_lines.append(line)
+
+            # 파일 덮어쓰기
+            with open(run_sh_path, "w") as file:
+                file.writelines(new_lines)
+        else:
+            for line in lines:
+                if "server.jar" in line and "nogui" in line:
+                    line = line.replace("nogui", "").replace("  ", " ").strip() + "\n"
+                new_lines.append(line)
+
+            # 파일 덮어쓰기
+            with open(run_sh_path, "w") as file:
+                file.writelines(new_lines)
