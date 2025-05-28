@@ -5,6 +5,9 @@ from ctk_label_button import make_image_button
 from mcipc.rcon.je import Client
 import os
 import re
+import requests
+from urllib.parse import urlsplit
+import shutil
 
 class ServerFunctions:
     def __init__(self, app):
@@ -168,3 +171,14 @@ class ServerFunctions:
             # 파일 덮어쓰기
             with open(run_sh_path, "w") as file:
                 file.writelines(new_lines)
+
+    def download_installer(self, url):
+        if url:
+            filename = os.path.basename(urlsplit(url).path)
+            try:
+                r = requests.get(url, stream=True)
+                with open(filename, 'wb') as f:
+                    shutil.copyfileobj(r.raw, f)
+                print(f"{filename} 다운로드 완료")
+            except Exception as e:
+                print(f"다운로드 오류: {e}")
