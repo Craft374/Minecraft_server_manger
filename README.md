@@ -51,3 +51,4 @@ Windows 실행 파일은 Windows에서, macOS 앱은 macOS에서 각각 빌드�
 - 설정은 사용자 홈 폴더의 `.emsr/config.json`에 저장됩니다.
 - JDK 자동 설치와 첫 서버 실행에는 인터넷 연결이 필요합니다.
 - 서버 제작 버튼은 다음 업데이트 안내만 표시합니다.
+- 이전 서버 제작 코드와 UI 시안은 `archive/server_creation`에 보관했습니다.

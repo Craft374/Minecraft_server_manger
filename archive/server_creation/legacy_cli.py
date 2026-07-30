@@ -7,6 +7,11 @@ from urllib.parse import urlsplit
 import shutil
 import tarfile
 import sys
+from pathlib import Path
+
+
+ARCHIVE_ROOT = Path(__file__).resolve().parent
+
 server_list_folder = os.getcwd()
 os.makedirs(os.path.expanduser("~/Documents/Minecraft_server"), exist_ok=True)
 jdk_folder_path = os.path.expanduser(f"~/Documents/Minecraft_server/jdk")
@@ -98,8 +103,7 @@ def get_valid_url():
             print(f"알 수 없는 오류 발생: {e}. 다시 입력해주세요.")
 
 def resource_path(relative_path): # version txt파일 열고 리스트 세이브
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    return os.path.join(base_path, relative_path)
+    return ARCHIVE_ROOT / relative_path
 
 def find_file(folder_path, file_name):
     for root, dirs, files in os.walk(folder_path):
@@ -122,7 +126,7 @@ def server_download():
     jdk_file_type_tar = False
     clear()
     os.chdir(server_list_folder)
-    with open(resource_path("version.txt"), "r", encoding="utf-8") as f:
+    with open(resource_path("data/paper_versions.txt"), "r", encoding="utf-8") as f:
         versions = [line.strip() for line in f]
     while True:
         text_ver = input("버전을 입력해주세요 ex) 1.12.2\n만약 무슨 버전이 있는지 모르는 경우 ? 를 입력하세요\n")
@@ -197,7 +201,8 @@ def server_download():
             break
         elif text_ver == "?":
             clear()
-            print(f"버전은 다음과 같습니다\n{', '.join(open(resource_path('version.txt'), encoding='utf-8').read().splitlines())}\n")
+            version_file = resource_path("data/paper_versions.txt")
+            print(f"버전은 다음과 같습니다\n{', '.join(open(version_file, encoding='utf-8').read().splitlines())}\n")
         else:
             print("잘못된 버전입니다 다시 입력해주세요\n")
     clear()

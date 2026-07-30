@@ -2,7 +2,7 @@ import json
 import requests
 import time
 import threading
-import os
+from pathlib import Path
 
 # 버전 리스트 (내림차순)
 mc_versions = [
@@ -113,10 +113,10 @@ print(f"\n⏱ 총 소요 시간: {elapsed:.2f}초")
 
 # JSON 저장
 base_url = "https://maven.minecraftforge.net/net/minecraftforge/forge"
-file_path = "forge_version.json"
+file_path = Path(__file__).resolve().parents[1] / "data" / "forge_versions.json"
 
-if os.path.exists(file_path):
-    with open(file_path, "r", encoding="utf-8") as f:
+if file_path.exists():
+    with file_path.open("r", encoding="utf-8") as f:
         full_data = json.load(f)
 else:
     full_data = {}
@@ -135,5 +135,5 @@ for mc_ver in mc_versions:
         }
     }
 
-with open(file_path, "w", encoding="utf-8") as f:
+with file_path.open("w", encoding="utf-8") as f:
     json.dump(full_data, f, indent=2, ensure_ascii=False)

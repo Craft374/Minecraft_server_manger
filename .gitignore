@@ -5,8 +5,25 @@
 __pycache__/
 *.py[cod]
 *.log
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.env
+.env.*
+!.env.example
 
 build/
 dist/
-test/node_modules/
-ui_sample.py
+downloads/
+scratch/
+node_modules/
+
+*.jar
+*.zip
+*.tar.gz
+*.part
+
+/EMSR
+/EMSR.exe
+/forge.html
