@@ -1,11 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-added_files = [('version.txt', '.')]
+from PyInstaller.utils.hooks import collect_data_files
+
+
+datas = [("app_version.txt", ".")]
+datas += collect_data_files("customtkinter")
+
 a = Analysis(
-    ['main.py'],
+    ["main_ui.py"],
     pathex=[],
     binaries=[],
-    datas=added_files,
+    datas=datas,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -19,21 +24,40 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
-    name='EMSR',
+    exclude_binaries=True,
+    name="EMSR",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['icon.ico']
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name="EMSR",
+)
+
+app = BUNDLE(
+    coll,
+    name="EMSR.app",
+    icon="icon.ico",
+    bundle_identifier="com.Craft374.EMSR",
+    info_plist={
+        "CFBundleDisplayName": "EMSR",
+        "CFBundleShortVersionString": "1.2",
+        "CFBundleVersion": "1.2.0",
+        "NSHighResolutionCapable": True,
+    },
 )

@@ -1,5 +1,12 @@
-.venv 
-test/node_modules
-build
-dist
+.DS_Store
+.idea/
+.vscode/
+.venv/
+__pycache__/
+*.py[cod]
+*.log
+
+build/
+dist/
+test/node_modules/
 ui_sample.py
